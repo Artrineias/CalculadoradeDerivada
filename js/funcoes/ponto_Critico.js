@@ -28,7 +28,5 @@ function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, pas
     return pontos_criticos;
 }
 
-
-
 module.exports = avaliar;
 module.exports = encontrar_pontos_criticos;
