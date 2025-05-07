@@ -1,11 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Derivadas e Máximos/Mínimos</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Lexend:wght@100..900&family=Orbitron:wght@400..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
-<body>
-    
+<body class="dark-mode">
+  <div class="container">
+    <h1>Calculadora de Derivadas e Máximos/Mínimos</h1>
+
+    <div class="theme-toggle">
+      <button onclick="alternarTema()">Alternar Modo Claro/Escuro</button>
+    </div>
+
+    <div class="inputs">
+      <label for="numTermos">Quantidade de termos:</label>
+      <input type="number" id="numTermos" min="1" required>
+      <button onclick="criarEntradas()">Confirmar</button>
+      
+      <form id="formFuncoes"></form>
+      <button onclick="processarFuncao()">Calcular Derivadas</button>
+    </div>
+
+    <div class="output">
+      <canvas id="grafico"></canvas>
+      <div id="saida"></div>
+    </div>
+  </div>
+
+  <script src="./js/script.js"></script>
+  <script>
+    function alternarTema() {
+      document.body.classList.toggle('dark-mode');
+      document.body.classList.toggle('light-mode');
+    }
+  </script>
 </body>
 </html>
