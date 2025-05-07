@@ -1,7 +1,6 @@
 const prompt = require("prompt-sync")();
 const derivada = require("./funcoes/derivada.js");
-const avaliar = require("./funcoes/ponto_Critico.js");
-const encontrar_pontos_criticos = require("./funcoes/ponto_Critico.js");
+const { avaliar, encontrar_pontos_criticos } = require("./funcoes/ponto_Critico.js");
 
 function ler_valores() {
     let tipo = prompt("Tipo de termo (p para polinomial, e para exponencial): ");
