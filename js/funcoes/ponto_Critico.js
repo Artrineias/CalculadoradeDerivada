@@ -10,7 +10,7 @@ function avaliar(funcao, x) {
     return resultado;
 }
 
-function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, passo = 0.01, tolerancia = 1e-3) {
+function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, passo = 0.001, tolerancia = 1e-8) {
     let pontos_criticos = [];
     let x = inicio;
     let y_anterior = avaliar(primeiraDerivada, x);
