@@ -18,7 +18,7 @@ function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, pas
         let y = avaliar(primeiraDerivada, x);
         if (Math.abs(y) < tolerancia || y * y_anterior < 0) { // Detecta mudança de sinal
             let ponto = Number(x.toFixed(3));
-            if (!pontos_criticos.includes(ponto)) { // Evita duplicatas
+            if (!pontos_criticos.some(p => Math.abs(p - ponto) < passo * 2)) {
                 pontos_criticos.push(ponto);
             }
         }
@@ -28,5 +28,7 @@ function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, pas
     return pontos_criticos;
 }
 
-module.exports = avaliar;
-module.exports = encontrar_pontos_criticos;
+module.exports = {
+    avaliar,
+    encontrar_pontos_criticos
+};
