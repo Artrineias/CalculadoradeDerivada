@@ -12,18 +12,17 @@ function avaliar(funcao, x) {
 
 function encontrar_pontos_criticos(primeiraDerivada, inicio = -10, fim = 10, passo = 0.001, tolerancia = 1e-8) {
     let pontos_criticos = [];
-    let x = inicio;
-    let y_anterior = avaliar(primeiraDerivada, x);
-    while (x <= fim) {
-        let y = avaliar(primeiraDerivada, x);
+    let y_anterior = avaliar(primeiraDerivada, inicio);
+    while (inicio <= fim) {
+        let y = avaliar(primeiraDerivada, inicio);
         if (Math.abs(y) < tolerancia || y * y_anterior < 0) { // Detecta mudança de sinal
-            let ponto = Number(x.toFixed(3));
+            let ponto = Number(inicio.toFixed(3));
             if (!pontos_criticos.some(p => Math.abs(p - ponto) < passo * 2)) {
                 pontos_criticos.push(ponto);
             }
         }
         y_anterior = y;
-        x += passo;
+        inicio += passo;
     }
     return pontos_criticos;
 }
