@@ -2,22 +2,36 @@ function derivadaString(termosStr) {
     function derivarTermo(termo, sinal = 1) {
         termo = termo.trim();
 
-        // Polinomial: ax^n
+        // Polinomial: ax^n ou x^n
         if (/^-?\d*\.?\d*x\^\d+$/.test(termo)) {
             const match = termo.match(/^(-?\d*\.?\d*)x\^(\d+)$/);
-            const coef = sinal * parseFloat(match[1] || (match[1] === '-' ? -1 : 1));
+            let coefStr = match[1];
+
+            const coef = parseFloat(
+                coefStr === '' || coefStr === '+' ? 1 :
+                coefStr === '-' ? -1 :
+                coefStr
+            );
+
             const exp = parseInt(match[2]);
-            const novoCoef = coef * exp;
+            const novoCoef = coef * exp * sinal;
             const novoExp = exp - 1;
 
             return novoExp === 0 ? `${novoCoef}` :
-                novoExp === 1 ? `${novoCoef}x` :
-                `${novoCoef}x^${novoExp}`;
+                   novoExp === 1 ? `${novoCoef}x` :
+                   `${novoCoef}x^${novoExp}`;
 
-        // Linear: ax
+        // Linear: ax ou x
         } else if (/^-?\d*\.?\d*x$/.test(termo)) {
-            const coef = sinal * parseFloat(termo.replace('x', '') || (termo.startsWith('-') ? -1 : 1));
-            return `${coef}`;
+            let coefStr = termo.replace('x', '');
+
+            const coef = parseFloat(
+                coefStr === '' || coefStr === '+' ? 1 :
+                coefStr === '-' ? -1 :
+                coefStr
+            );
+
+            return `${coef * sinal}`;
 
         // Exponencial: ae^x ou ae^(x)
         } else if (/^-?\d*\.?\d*e\^\(?[a-zA-Z0-9+\-*/^]+\)?$/.test(termo)) {
@@ -33,11 +47,11 @@ function derivadaString(termosStr) {
             coef *= sinal;
 
             return coef === 1 ? `e^(${argumento})` :
-                coef === -1 ? `-e^(${argumento})` :
-                `${coef}e^(${argumento})`;
+                   coef === -1 ? `-e^(${argumento})` :
+                   `${coef}e^(${argumento})`;
 
         // Constante: número puro
-        } else if (/^-?\d+(\.\d+)?$/.test(termo)) {
+        } else if (/^-?\d+(\.\d+)?$/.test(termo) || /^[-+]?\d+(\.\d+)?(\^\d+)?$/.test(termo)) {
             return '0';
         }
 
