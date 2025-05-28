@@ -1,5 +1,5 @@
-function derivadaString(termosStr) {
-    function derivarTermo(termo, sinal = 1) {
+function integralString(termosStr) {
+    function integrarTermo(termo, sinal = 1) {
         termo = termo.trim();
 
         // Polinomial: ax^n ou x^n
@@ -14,8 +14,8 @@ function derivadaString(termosStr) {
             );
 
             const exp = parseInt(match[2]);
-            const novoCoef = coef * exp * sinal;
-            const novoExp = exp - 1;
+            const novoCoef = (coef / (exp + 1)) * sinal;
+            const novoExp = exp + 1;
 
             return novoExp === 0 ? `${novoCoef}` :
                    novoExp === 1 ? `${novoCoef}x` :
@@ -31,7 +31,7 @@ function derivadaString(termosStr) {
                 coefStr
             );
 
-            return `${coef * sinal}`;
+            return `${(coef / 2) * sinal}x^2`;
 
         // Exponencial: ae^x ou ae^(x)
         } else if (/^-?\d*\.?\d*e\^/.test(termo)) {
@@ -65,10 +65,10 @@ function derivadaString(termosStr) {
 
         // Constante: número puro
         } else if (/^-?\d+(\.\d+)?$/.test(termo)) {
-            return '0';
+            return `${parseFloat(termo) * sinal}x`;
         }
 
-        return `Não reconhecido: ${termo}`;
+        return `Não reconhecido: ${termo}`;  
     }
 
     function processarSubtermos(expressao, sinalPrincipal = 1) {
@@ -110,7 +110,7 @@ function derivadaString(termosStr) {
                 termoLimpo = termo.slice(1);
             }
             
-            return derivarTermo(termoLimpo, sinal);
+            return integrarTermo(termoLimpo, sinal);
         });
     }
 
@@ -131,11 +131,11 @@ function derivadaString(termosStr) {
             return processarSubtermos(conteudo, sinal);
         }
 
-        return [derivarTermo(termo, sinal)];
+        return [integrarTermo(termo, sinal)];
     });
 }
 
-function formatarDerivada(termos) {
+function formatarIntegral(termos) {
     const termosValidos = termos.filter(t => t !== '0' && !t.includes('Não reconhecido'));
     
     if (termosValidos.length === 0) {
@@ -161,6 +161,6 @@ function formatarDerivada(termos) {
 }
 
 module.exports = {
-    derivadaString,
-    formatarDerivada
+    integralString,
+    formatarIntegral
 }
