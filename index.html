@@ -1,11 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Calculadora de Derivadas e Limites</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/funcoes/ponto_Critico.js"></script>
+    <script src="js/funcoes/derivada.js"></script>
 </head>
 <body>
-    
+    <div class="calculator">
+        <h2>Calculadora de Derivadas e Limites</h2>
+        <div class="input-group">
+            <label for="function">Função:</label>
+            <input type="text" id="function" placeholder="Ex: x^2 + 3x + 2">
+        </div>
+        <div class="buttons">
+            <button onclick="calcularPrimeiraDerivada()">1ª Derivada</button>
+            <button onclick="calcularSegundaDerivada()">2ª Derivada</button>
+            <button onclick="calcularLimite()">Ponto Limite</button>
+        </div>
+    </div>
 </body>
 </html>

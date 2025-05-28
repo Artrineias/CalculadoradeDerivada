@@ -47,8 +47,9 @@ function rotina() {
         let n = Number(prompt("Digite a quantidade de termos: "));
         if (n <= 0) {
             console.log("Número de termos deve ser positivo!");
-        } else if (isNaN(n)) {
+        }else if (isNaN(n)) {
             console.log("Entrada inválida! Usando 1 termo.");
+            break
         } else {
             let funcao = [];
             for (let i = 0; i < n; i++) {
@@ -88,3 +89,4 @@ function rotina() {
 
 
 
+rotina()
