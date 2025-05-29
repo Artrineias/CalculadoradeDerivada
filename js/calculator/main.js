@@ -22,24 +22,19 @@ function nova_funcao() {
     let inicio = 0;
     let dentro_parenteses = 0;
 
-    for (let i = 1; i < funcao.length; i++) {
-        switch (funcao[i]) {
-            case '(':
-                dentro_parenteses++;
-                break;
-            case ')':
-                dentro_parenteses--;
-                break;
-            case '+':
-            case '-':
-                if (dentro_parenteses === 0) {
-                    termos.push(funcao.slice(inicio, i));
-                    inicio = i;
-                }
-                break;
+    for (let i = 0; i < funcao.length; i++) {
+        const char = funcao[i];
+
+        if (char === '(') {
+            dentro_parenteses++;
+        } else if (char === ')') {
+            dentro_parenteses--;
+        } else if ((char === '+' || char === '-') && i !== 0 && dentro_parenteses === 0) {
+            // Quebra apenas fora dos parênteses e ignora o primeiro caractere
+            termos.push(funcao.slice(inicio, i));
+            inicio = i;
         }
     }
-
     termos.push(funcao.slice(inicio));
     return { termos, funcao };
 }
