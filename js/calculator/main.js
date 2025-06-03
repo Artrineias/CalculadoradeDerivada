@@ -1,6 +1,6 @@
 const prompt = require("prompt-sync")();
 const { derivadaString, formatarDerivada } = require("./funcoes/derivada.js");
-const { integralString, formatarIntegral, integralNumerica } = require("./funcoes/integral.js");
+const { integralNumerica } = require("./funcoes/integral.js");
 const { encontrar_pontos_criticos, classificar_ponto_critico } = require("./funcoes/ponto_critico.js");
 
 const tipo = parseInt(prompt("Escolha derivar = 1 ou integrar = 2: "));
@@ -73,11 +73,6 @@ if (tipo === 1) {
     
     console.log(`\n===== Análise da função =====`);
     console.log(`Termos:`, termos);
-    
-    // Integral analítica
-    const integral = integralString(termos);
-    const integralFormatada = formatarIntegral(integral);
-    console.log(`Integral primitiva: ∫(${funcao})dx = ${integralFormatada} + C`);
     
     // Integração numérica
     const a = parseFloat(prompt("Entre com o limite inferior (a): "));
