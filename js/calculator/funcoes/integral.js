@@ -1,166 +1,133 @@
-function integralString(termosStr) {
-    function integrarTermo(termo, sinal = 1) {
-        termo = termo.trim();
+const math = require('mathjs');
 
-        // Polinomial: ax^n ou x^n
-        if (/^-?\d*\.?\d*x\^\d+$/.test(termo)) {
-            const match = termo.match(/^(-?\d*\.?\d*)x\^(\d+)$/);
-            let coefStr = match[1];
+// Função para calcular a integral analítica
+function integralString(termos) {
+    let integral = [];
+    for (let termo of termos) {
+        let coeficiente = 1, expoente = 0, variavel = '', base = '';
 
-            const coef = parseFloat(
-                coefStr === '' || coefStr === '+' ? 1 :
-                coefStr === '-' ? -1 :
-                coefStr
-            );
-
-            const exp = parseInt(match[2]);
-            const novoCoef = (coef / (exp + 1)) * sinal;
-            const novoExp = exp + 1;
-
-            return novoExp === 0 ? `${novoCoef}` :
-                   novoExp === 1 ? `${novoCoef}x` :
-                   `${novoCoef}x^${novoExp}`;
-
-        // Linear: ax ou x
-        } else if (/^-?\d*\.?\d*x$/.test(termo)) {
-            let coefStr = termo.replace('x', '');
-
-            const coef = parseFloat(
-                coefStr === '' || coefStr === '+' ? 1 :
-                coefStr === '-' ? -1 :
-                coefStr
-            );
-
-            return `${(coef / 2) * sinal}x^2`;
-
-        // Exponencial: ae^x ou ae^(x)
-        } else if (/^-?\d*\.?\d*e\^/.test(termo)) {
-            const match = termo.match(/^(-?\d*\.?\d*)e\^(.*)$/);
-            if (!match) return `Não reconhecido: ${termo}`;
-
-            const coefStr = match[1];
-            let argumento = match[2];
-
-            // Remove parênteses desnecessários se for apenas 'x'
-            if (argumento === '(x)') {
-                argumento = 'x';
+        // Extrair coeficiente, variável, expoente e outras partes (como e^x, ln(x))
+        let match = termo.match(/^([+-]?\d*\.?\d*)\*?([a-zA-Z]+)(\^([+-]?\d*\.?\d*))?|^([+-]?\d*\.?\d*)\*?e\^([a-zA-Z]+)|^([+-]?\d*\.?\d*)\*?ln\(([a-zA-Z]+)\)/);
+        
+        if (match) {
+            if (match[1] !== undefined) { // Forma: ax^n
+                coeficiente = match[1] ? parseFloat(match[1]) : 1;
+                if (match[1] === '+' || match[1] === '') coeficiente = 1;
+                if (match[1] === '-') coeficiente = -1;
+                
+                variavel = match[2];
+                expoente = match[4] ? parseFloat(match[4]) : 1;
+                
+                // Integração: ∫ax^n dx = (a/(n+1))x^(n+1)
+                const novoCoeficiente = coeficiente / (expoente + 1);
+                const novoExpoente = expoente + 1;
+                integral.push(`${novoCoeficiente}*${variavel}^${novoExpoente}`);
+                
+            } else if (match[5] !== undefined) { // Forma: ae^x
+                coeficiente = match[5] ? parseFloat(match[5]) : 1;
+                if (match[5] === '+' || match[5] === '') coeficiente = 1;
+                if (match[5] === '-') coeficiente = -1;
+                
+                base = match[6];
+                // Integração: ∫ae^x dx = ae^x
+                integral.push(`${coeficiente}*e^${base}`);
+                
+            } else if (match[7] !== undefined) { // Forma: aln(x)
+                coeficiente = match[7] ? parseFloat(match[7]) : 1;
+                if (match[7] === '+' || match[7] === '') coeficiente = 1;
+                if (match[7] === '-') coeficiente = -1;
+                
+                variavel = match[8];
+                // Integração: ∫aln(x) dx = ax*ln(x) - ax
+                integral.push(`${coeficiente}*${variavel}*ln(${variavel})-${coeficiente}*${variavel}`);
             }
-
-            let coef = 1;
-            if (coefStr === '-') coef = -1;
-            else if (coefStr && coefStr !== '+') coef = parseFloat(coefStr);
-            coef *= sinal;
-
-            // Para e^x, a derivada é simplesmente o coeficiente * e^x
-            if (argumento === 'x') {
-                return coef === 1 ? `e^x` :
-                       coef === -1 ? `-e^x` :
-                       `${coef}e^x`;
-            } else {
-                // Para casos mais complexos como e^(2x), precisaria de regra da cadeia
-                return coef === 1 ? `e^(${argumento})` :
-                       coef === -1 ? `-e^(${argumento})` :
-                       `${coef}e^(${argumento})`;
-            }
-
-        // Constante: número puro
-        } else if (/^-?\d+(\.\d+)?$/.test(termo)) {
-            return `${parseFloat(termo) * sinal}x`;
+        } else if (termo.match(/^[+-]?\d*\.?\d*$/)) { // Constante
+            coeficiente = parseFloat(termo) || 0;
+            // Integração: ∫a dx = ax
+            integral.push(`${coeficiente}*x`);
         }
-
-        return `Não reconhecido: ${termo}`;  
     }
-
-    function processarSubtermos(expressao, sinalPrincipal = 1) {
-        let termos = [];
-        let buffer = '';
-        let nivel = 0;
-        
-        for (let i = 0; i < expressao.length; i++) {
-            const char = expressao[i];
-            
-            if (char === '(') {
-                nivel++;
-                buffer += char;
-            } else if (char === ')') {
-                nivel--;
-                buffer += char;
-            } else if ((char === '+' || char === '-') && nivel === 0 && i > 0) {
-                if (buffer.trim()) {
-                    termos.push(buffer.trim());
-                }
-                buffer = char;
-            } else {
-                buffer += char;
-            }
-        }
-        
-        if (buffer.trim()) {
-            termos.push(buffer.trim());
-        }
-        
-        return termos.map(termo => {
-            let sinal = sinalPrincipal;
-            let termoLimpo = termo;
-            
-            if (termo.startsWith('+')) {
-                termoLimpo = termo.slice(1);
-            } else if (termo.startsWith('-')) {
-                sinal *= -1;
-                termoLimpo = termo.slice(1);
-            }
-            
-            return integrarTermo(termoLimpo, sinal);
-        });
-    }
-
-    return termosStr.flatMap((termoOriginal) => {
-        let termo = termoOriginal.trim();
-        let sinal = 1;
-
-        if (termo.startsWith('+')) {
-            termo = termo.slice(1);
-        } else if (termo.startsWith('-')) {
-            sinal = -1;
-            termo = termo.slice(1);
-        }
-
-        // Verifica se é uma expressão entre parênteses
-        if (/^\(.*\)$/.test(termo)) {
-            const conteudo = termo.slice(1, -1);
-            return processarSubtermos(conteudo, sinal);
-        }
-
-        return [integrarTermo(termo, sinal)];
-    });
+    return integral;
 }
 
-function formatarIntegral(termos) {
-    const termosValidos = termos.filter(t => t !== '0' && !t.includes('Não reconhecido'));
-    
-    if (termosValidos.length === 0) {
-        return '0';
+// Função para formatar a integral analítica
+function formatarIntegral(integral) {
+    if (integral.length === 0) return "0";
+    return integral.join(" + ")
+        .replace(/\+\s-/g, "- ")
+        .replace(/1\*/g, "")
+        .replace(/\*1(?!\d)/g, "")
+        .replace(/\^1(?!\d)/g, "");
+}
+
+// Função auxiliar para avaliar a função em um ponto x
+function avaliarFuncao(funcao, x) {
+    try {
+        // Substitui 'e' por Math.E para compatibilidade
+        const funcaoProcessada = funcao.replace(/\be\b/g, Math.E.toString());
+        return math.evaluate(funcaoProcessada, { x });
+    } catch (erro) {
+        throw new Error(`Erro ao avaliar a função: ${erro.message}`);
     }
+}
+
+// Método de Riemann (esquerda, direita, ponto médio)
+function riemann(funcao, a, b, n, tipo = 'esquerda') {
+    if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
+    if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
     
-    return termosValidos
-        .map((termo, i) => {
-            termo = termo.toString().trim();
-            
-            if (i === 0) {
-                return termo;
-            }
-            
-            if (termo.startsWith('-')) {
-                return ` - ${termo.slice(1)}`;
-            } else {
-                return ` + ${termo}`;
-            }
-        })
-        .join('')
-        .trim();
+    const dx = (b - a) / n;
+    let soma = 0;
+    
+    for (let i = 0; i < n; i++) {
+        let xi;
+        switch (tipo) {
+            case 'esquerda':
+                xi = a + i * dx;
+                break;
+            case 'direita':
+                xi = a + (i + 1) * dx;
+                break;
+            case 'pontoMedio':
+                xi = a + (i + 0.5) * dx;
+                break;
+            default:
+                throw new Error("Tipo deve ser 'esquerda', 'direita' ou 'pontoMedio'");
+        }
+        soma += avaliarFuncao(funcao, xi);
+    }
+    return soma * dx;
+}
+
+// Regra dos Trapézios
+function trapezio(funcao, a, b, n) {
+    if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
+    if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
+    
+    const dx = (b - a) / n;
+    let soma = (avaliarFuncao(funcao, a) + avaliarFuncao(funcao, b)) / 2;
+    
+    for (let i = 1; i < n; i++) {
+        const xi = a + i * dx;
+        soma += avaliarFuncao(funcao, xi);
+    }
+    return soma * dx;
+}
+
+// Função principal para integração numérica - apenas Riemann e Trapézio
+function integralNumerica(funcao, a, b, n) {
+    return {
+        riemannEsquerda: riemann(funcao, a, b, n, 'esquerda'),
+        riemannDireita: riemann(funcao, a, b, n, 'direita'),
+        riemannPontoMedio: riemann(funcao, a, b, n, 'pontoMedio'),
+        trapezio: trapezio(funcao, a, b, n)
+    };
 }
 
 module.exports = {
     integralString,
-    formatarIntegral
-}
+    formatarIntegral,
+    integralNumerica,
+    riemann,
+    trapezio
+};
