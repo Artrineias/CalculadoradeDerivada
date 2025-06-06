@@ -1,11 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Funções</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+    <!-- Existing calculation functions scripts assumed to be loaded here -->
+    <script src="js/calculator/funcoes/avaliar.js"></script>
+    <script src="js/calculator/funcoes/derivada.js"></script>
+    <script src="js/calculator/funcoes/integral.browser.js"></script>
+    <script src="js/calculator/funcoes/ponto_critico.global.js"></script>
 </head>
 <body>
-    
+    <div class="container-card">
+        <h1>Calculadora de Funções</h1>
+        <div class="tab-buttons">
+            <button id="tab-derivar" class="tab-button active" type="button">Derivar</button>
+            <button id="tab-integrar" class="tab-button" type="button">Integrar</button>
+        </div>
+
+        <form id="calc-form" novalidate>
+            <label for="funcao-input">Função f(x):</label>
+            <input type="text" id="funcao-input" placeholder="Ex: 3x^2 + 2x - 5" required />
+
+            <div id="integral-inputs" class="hidden">
+                <label for="limite-inferior">Limite inferior (a):</label>
+                <input type="number" id="limite-inferior" step="any" value="0" />
+
+                <label for="limite-superior">Limite superior (b):</label>
+                <input type="number" id="limite-superior" step="any" value="1" />
+
+                <label for="subdivisoes">Número de subdivisões (n):</label>
+                <input type="number" id="subdivisoes" min="1" step="1" value="100" />
+            </div>
+
+            <div class="action-buttons">
+                <button id="btn-calcular-derivada" type="button" class="action-button">Calcular Derivada</button>
+                <button id="btn-calcular-integral" type="button" class="action-button hidden">Calcular Integral</button>
+                <button id="btn-gerar-grafico" type="button" class="action-button">Gerar Gráfico</button>
+            </div>
+        </form>
+
+        <div id="resultado" class="resultado"></div>
+
+        <canvas id="grafico" width="600" height="400"></canvas>
+    </div>
+
+    <script src="js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,158 @@
+/* Gradient background for body */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card container */
+.container-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 2rem 2.5rem;
+    max-width: 700px;
+    width: 90%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Heading */
+.container-card h1 {
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Tab buttons container */
+.tab-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Tab buttons */
+.tab-button {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    user-select: none;
+    outline-offset: 2px;
+}
+
+.tab-button.active {
+    color: #4a90e2;
+    border-bottom-color: #4a90e2;
+    font-weight: 600;
+}
+
+/* Form labels */
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: #444;
+    margin-top: 1rem;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+/* Hide elements */
+.hidden {
+    display: none;
+}
+
+/* Action buttons container */
+.action-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Action buttons */
+.action-button {
+    background: transparent;
+    border: 2px solid #4a90e2;
+    color: #4a90e2;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    min-width: 140px;
+}
+
+.action-button:hover {
+    background: #4a90e2;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
+}
+
+.action-button:active {
+    background: #3a78c2;
+    box-shadow: none;
+}
+
+/* Result display */
+.resultado {
+    margin-top: 1.5rem;
+    min-height: 2.5rem;
+    font-size: 1.1rem;
+    color: #222;
+    font-weight: 600;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+/* Canvas graph */
+#grafico {
+    margin-top: 2rem;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .container-card {
+        padding: 1.5rem 1.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .action-button {
+        min-width: 100%;
+    }
+}
