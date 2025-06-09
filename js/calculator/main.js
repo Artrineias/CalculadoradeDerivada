@@ -58,13 +58,24 @@ if (tipo === 1) {
     
     const segunda_derivada = derivadaString(derivada);
     const segundaDerivadaFormatada = formatarDerivada(segunda_derivada);
-    console.log(`Segunda derivada: f''(x) = ${segundaDerivadaFormatada}`);
+    console.log(`Segunda derivada: f''(x) = ${segundaDerivadaFormatada}\n`);
     
+    const inicio = Number(prompt("Entre com o início do intervalo para busca do ponto crítico: "));
+    const fim = Number(prompt("Entre com o fim do intervalo para busca do ponto crítico: "));
+
+    if (inicio > fim) {
+        console.log("O início do intervalo não pode ser maior que o fim.\n");
+        process.exit(1);
+    } else if (inicio === fim) {
+        console.log("O início do intervalo não pode ser igual ao o fim.\n");
+        process.exit(1);
+    }
+
     // Encontrar pontos críticos
-    const pontos_criticos = encontrar_pontos_criticos(derivada);
+    const pontos_criticos = encontrar_pontos_criticos(derivada, inicio, fim);
     
     if (pontos_criticos.length === 0) {
-        console.log("Nenhum ponto crítico encontrado no intervalo [-10, 10].\n");
+        console.log(`Nenhum ponto crítico encontrado no intervalo [${inicio}, ${fim}].\n`);
     } else {
         console.log(`\nPontos críticos encontrados:`);
         classificar_ponto_critico(termos, pontos_criticos, segunda_derivada);
@@ -93,6 +104,7 @@ if (tipo === 1) {
         console.log(`Soma de Riemann (direita): ${resultados.riemannDireita.toFixed(6)}`);
         console.log(`Soma de Riemann (ponto médio): ${resultados.riemannPontoMedio.toFixed(6)}`);
         console.log(`Regra dos Trapézios: ${resultados.trapezio.toFixed(6)}`);
+        console.log(`Regra de Simpson: ${resultados.simpson.toFixed(6)}`);
     } catch (error) {
         console.log(`Erro ao calcular integrais numéricas: ${error.message}`);
     }
