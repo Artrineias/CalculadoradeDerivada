@@ -1,9 +1,9 @@
 function avaliarTermo(termo, x) {
     // Polinomial: ax^n
-    if (/^-?\d*\.?\d*x\^\d+$/.test(termo)) {
-        const match = termo.match(/^(-?\d*\.?\d*)x\^(\d+)$/);
+    if (/^-?\d*\.?\d*x\^-?\d+(\.\d+)?$/.test(termo)) {
+        const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+(\.\d+)?)$/);
         const coef = parseFloat(match[1] || (match[1] === '-' ? -1 : 1));
-        const exp = parseInt(match[2]);
+        const exp = parseFloat(match[2]);
         return coef * (x ** exp);
 
     // Linear: ax
