@@ -2,9 +2,12 @@ function derivadaString(termosStr) {
     function derivarTermo(termo, sinal = 1) {
         termo = termo.trim();
 
-        // Polinomial: ax^n ou x^n
-        if (/^-?\d*\.?\d*x\^\d+$/.test(termo)) {
-            const match = termo.match(/^(-?\d*\.?\d*)x\^(\d+)$/);
+        // Polinomial: ax^n ou x^n (AGORA COM SUPORTE A EXPOENTES NEGATIVOS)
+        // O regex foi ajustado para permitir um '-' opcional dentro do grupo de expoente
+        // de `/^-?\d*\.?\d*x\^\d+$/` para `/^-?\d*\.?\d*x\^(-?\d+)$/`
+        // e o match correspondente.
+        if (/^-?\d*\.?\d*x\^(-?\d+)$/.test(termo)) { //
+            const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+)$/); //
             let coefStr = match[1];
 
             const coef = parseFloat(
@@ -13,13 +16,19 @@ function derivadaString(termosStr) {
                 coefStr
             );
 
-            const exp = parseInt(match[2]);
-            const novoCoef = coef * exp * sinal;
-            const novoExp = exp - 1;
+            const exp = parseInt(match[2]); // expoente agora pode ser negativo
+            
+            // Se o expoente for 0, a derivada é 0 (constante)
+            if (exp === 0) { //
+                return '0'; //
+            }
 
-            return novoExp === 0 ? `${novoCoef}` :
-                   novoExp === 1 ? `${novoCoef}x` :
-                   `${novoCoef}x^${novoExp}`;
+            const novoCoef = coef * exp * sinal; //
+            const novoExp = exp - 1; //
+
+            return novoExp === 0 ? `${novoCoef}` : // Ex: 5x^1 -> 5
+                   novoExp === 1 ? `${novoCoef}x` : // Ex: 5x^2 -> 10x
+                   `${novoCoef}x^${novoExp}`; // Ex: 5x^3 -> 15x^2, ou 5x^-2 -> -10x^-3
 
         // Linear: ax ou x
         } else if (/^-?\d*\.?\d*x$/.test(termo)) {
