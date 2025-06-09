@@ -1,11 +1,7 @@
 function derivadaString(termosStr) {
     function derivarTermo(termo, sinal = 1) {
         termo = termo.trim();
-
-        // Polinomial: ax^n ou x^n (AGORA COM SUPORTE A EXPOENTES NEGATIVOS)
-        // O regex foi ajustado para permitir um '-' opcional dentro do grupo de expoente
-        // de `/^-?\d*\.?\d*x\^\d+$/` para `/^-?\d*\.?\d*x\^(-?\d+)$/`
-        // e o match correspondente.
+        
         if (/^-?\d*\.?\d*x\^(-?\d+)$/.test(termo)) { //
             const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+)$/); //
             let coefStr = match[1];
