@@ -3,52 +3,71 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Calculadora de Funções</title>
+    <title>Calculadora de Derivadas e Integrais</title>
     <link rel="stylesheet" href="css/style.css" />
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MathJax CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <!-- Math.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
-    <!-- Existing calculation functions scripts assumed to be loaded here -->
-    <script src="js/calculator/funcoes/avaliar.js"></script>
-    <script src="js/calculator/funcoes/derivada.js"></script>
-    <script src="js/calculator/funcoes/integral.browser.js"></script>
-    <script src="js/calculator/funcoes/ponto_critico.global.js"></script>
 </head>
 <body>
     <div class="container-card">
         <h1>Calculadora de Funções</h1>
         <div class="tab-buttons">
-            <button id="tab-derivar" class="tab-button active" type="button">Derivar</button>
-            <button id="tab-integrar" class="tab-button" type="button">Integrar</button>
+            <button id="tab-derivar" class="tab-button active">Derivar</button>
+            <button id="tab-integrar" class="tab-button">Integrar</button>
         </div>
 
-        <form id="calc-form" novalidate>
-            <label for="funcao-input">Função f(x):</label>
-            <input type="text" id="funcao-input" placeholder="Ex: 3x^2 + 2x - 5" required />
+        <div id="content-derivar" class="tab-content active">
+            <label for="input-funcao-derivar">Função f(x):</label>
+            <input type="text" id="input-funcao-derivar" placeholder="Ex: 3x^2 - 5x + 2" />
 
-            <div id="integral-inputs" class="hidden">
-                <label for="limite-inferior">Limite inferior (a):</label>
-                <input type="number" id="limite-inferior" step="any" value="0" />
+            <label for="input-intervalo-inferior">Intervalo Inferior (x min):</label>
+            <input type="number" id="input-intervalo-inferior" value="-10" />
 
-                <label for="limite-superior">Limite superior (b):</label>
-                <input type="number" id="limite-superior" step="any" value="1" />
+            <label for="input-intervalo-superior">Intervalo Superior (x max):</label>
+            <input type="number" id="input-intervalo-superior" value="10" />
 
-                <label for="subdivisoes">Número de subdivisões (n):</label>
-                <input type="number" id="subdivisoes" min="1" step="1" value="100" />
+            <button id="btn-calcular-derivada" class="action-button">Calcular Derivadas</button>
+
+            <div id="derivativeResults" class="resultado-mathjax">
+                <h3>Derivadas:</h3>
+                <p>f'(x) = <span id="firstDerivativeLatex"></span></p>
+                <p>f''(x) = <span id="secondDerivativeLatex"></span></p>
+                <h3>Pontos Críticos:</h3>
+                <ul id="criticalPointsListLatex"></ul>
             </div>
+        </div>
 
-            <div class="action-buttons">
-                <button id="btn-calcular-derivada" type="button" class="action-button">Calcular Derivada</button>
-                <button id="btn-calcular-integral" type="button" class="action-button hidden">Calcular Integral</button>
-                <button id="btn-gerar-grafico" type="button" class="action-button">Gerar Gráfico</button>
-            </div>
-        </form>
+        <div id="content-integrar" class="tab-content">
+            <label for="input-funcao-integrar">Função f(x):</label>
+            <input type="text" id="input-funcao-integrar" placeholder="Ex: 3x^2 - 5x + 2" />
 
-        <div id="resultado" class="resultado"></div>
+            <label for="input-limite-inferior">Limite Inferior (a):</label>
+            <input type="number" id="input-limite-inferior" value="0" />
+
+            <label for="input-limite-superior">Limite Superior (b):</label>
+            <input type="number" id="input-limite-superior" value="1" />
+
+            <label for="input-subdivisoes">Número de subdivisões (n):</label>
+            <input type="number" id="input-subdivisoes" value="100" min="1" />
+
+            <button id="btn-calcular-integral" class="action-button">Calcular Integral</button>
+
+            <div id="resultado-integral" class="resultado-mathjax"></div>
+        </div>
+
+        <button id="btn-gerar-grafico" class="action-button">Gerar Gráfico</button>
 
         <canvas id="grafico" width="600" height="400"></canvas>
     </div>
 
+    <script src="js/calculator/funcoes/avaliar.js"></script>
+    <script src="js/calculator/funcoes/derivada.js"></script>
+    <script src="js/calculator/funcoes/ponto_critico.js"></script>
+    <script src="js/calculator/funcoes/integral.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

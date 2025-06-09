@@ -1,19 +1,24 @@
-/* eslint-disable no-undef */
-// Assuming avaliar, derivadaString, formatarDerivada, integralNumerica, encontrar_pontos_criticos, classificar_ponto_critico are globally available
-
 document.addEventListener('DOMContentLoaded', () => {
     const tabDerivar = document.getElementById('tab-derivar');
     const tabIntegrar = document.getElementById('tab-integrar');
-    const integralInputs = document.getElementById('integral-inputs');
+    const contentDerivar = document.getElementById('content-derivar');
+    const contentIntegrar = document.getElementById('content-integrar');
+
+    const inputFuncaoDerivar = document.getElementById('input-funcao-derivar');
     const btnCalcularDerivada = document.getElementById('btn-calcular-derivada');
+    const resultadoDerivada = document.getElementById('resultado-derivada');
+
+    const inputFuncaoIntegrar = document.getElementById('input-funcao-integrar');
+    const inputLimiteInferior = document.getElementById('input-limite-inferior');
+    const inputLimiteSuperior = document.getElementById('input-limite-superior');
+    const inputSubdivisoes = document.getElementById('input-subdivisoes');
     const btnCalcularIntegral = document.getElementById('btn-calcular-integral');
+    const resultadoIntegral = document.getElementById('resultado-integral');
+
     const btnGerarGrafico = document.getElementById('btn-gerar-grafico');
-    const funcaoInput = document.getElementById('funcao-input');
-    const resultadoDiv = document.getElementById('resultado');
-    const graficoCanvas = document.getElementById('grafico');
+    const canvasGrafico = document.getElementById('grafico');
     let chart = null;
 
-    // Mode state: 'derivar' or 'integrar'
     let mode = 'derivar';
 
     function switchMode(newMode) {
@@ -21,17 +26,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'derivar') {
             tabDerivar.classList.add('active');
             tabIntegrar.classList.remove('active');
-            integralInputs.classList.add('hidden');
-            btnCalcularDerivada.classList.remove('hidden');
-            btnCalcularIntegral.classList.add('hidden');
-            resultadoDiv.textContent = '';
+            contentDerivar.classList.add('active');
+            contentIntegrar.classList.remove('active');
+            clearResult(resultadoDerivada);
+            clearResult(resultadoIntegral);
+            // Ensure inputs are visible
+            inputFuncaoDerivar.style.display = 'block';
+            document.getElementById('input-intervalo-inferior').style.display = 'block';
+            document.getElementById('input-intervalo-superior').style.display = 'block';
+            btnCalcularDerivada.style.display = 'inline-block';
+
+            inputFuncaoIntegrar.style.display = 'none';
+            inputLimiteInferior.style.display = 'none';
+            inputLimiteSuperior.style.display = 'none';
+            inputSubdivisoes.style.display = 'none';
+            btnCalcularIntegral.style.display = 'none';
         } else {
             tabDerivar.classList.remove('active');
             tabIntegrar.classList.add('active');
-            integralInputs.classList.remove('hidden');
-            btnCalcularDerivada.classList.add('hidden');
-            btnCalcularIntegral.classList.remove('hidden');
-            resultadoDiv.textContent = '';
+            contentDerivar.classList.remove('active');
+            contentIntegrar.classList.add('active');
+            clearResult(resultadoDerivada);
+            clearResult(resultadoIntegral);
+            // Ensure inputs are visible
+            inputFuncaoDerivar.style.display = 'none';
+            document.getElementById('input-intervalo-inferior').style.display = 'none';
+            document.getElementById('input-intervalo-superior').style.display = 'none';
+            btnCalcularDerivada.style.display = 'none';
+
+            inputFuncaoIntegrar.style.display = 'block';
+            inputLimiteInferior.style.display = 'block';
+            inputLimiteSuperior.style.display = 'block';
+            inputSubdivisoes.style.display = 'block';
+            btnCalcularIntegral.style.display = 'inline-block';
         }
         clearChart();
     }
@@ -46,19 +73,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function showError(message) {
-        resultadoDiv.textContent = message;
-        resultadoDiv.style.color = 'red';
+    function clearResult(element) {
+        element.innerHTML = '';
+        element.style.color = '#222';
     }
 
-    function showResult(message) {
-        resultadoDiv.textContent = message;
-        resultadoDiv.style.color = '#222';
+    function showError(element, message) {
+        element.innerHTML = `<span style="color:red;">${message}</span>`;
+    }
+
+    async function showResult(element, latexString) {
+        // Replace newline characters and explicit \n strings with LaTeX line break \\
+        let formattedLatex = latexString.replace(/\\n/g, '\\\\').replace(/\n/g, '\\\\');
+        // Add extra line break after each line for spacing
+        formattedLatex = formattedLatex.replace(/\\\\/g, '\\\\[12pt]');
+        element.innerHTML = `\\[${formattedLatex}\\]`;
+        if (window.MathJax) {
+            await MathJax.typesetPromise([element]);
+        }
     }
 
     function parseFunctionTerms(funcStr) {
-        // Adapted from main.js nova_funcao function to split terms considering parentheses and signs
-        funcStr = funcStr.replace(/\s+/g, ''); // Remove spaces
+        funcStr = funcStr.replace(/\s+/g, '');
         let termos = [];
         let inicio = 0;
         let dentro_parenteses = 0;
@@ -80,16 +116,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         termos.push(funcStr.slice(inicio));
 
-        // Filter empty terms that may appear due to multiple signs or leading sign
         termos = termos.filter(t => t.trim() !== '');
 
         return termos;
     }
 
-    btnCalcularDerivada.addEventListener('click', () => {
-        const funcStr = funcaoInput.value.trim();
+    btnCalcularDerivada.addEventListener('click', async () => {
+        const funcStr = inputFuncaoDerivar.value.trim();
+        const intervaloInferior = parseFloat(document.getElementById('input-intervalo-inferior').value);
+        const intervaloSuperior = parseFloat(document.getElementById('input-intervalo-superior').value);
+
         if (!funcStr) {
-            showError('Por favor, insira uma função válida.');
+            showError(resultadoDerivada, 'Por favor, insira uma função válida.');
+            return;
+        }
+        if (isNaN(intervaloInferior) || isNaN(intervaloSuperior)) {
+            showError(resultadoDerivada, 'Por favor, insira valores numéricos válidos para o intervalo.');
+            return;
+        }
+        if (intervaloInferior >= intervaloSuperior) {
+            showError(resultadoDerivada, 'O intervalo inferior deve ser menor que o intervalo superior.');
             return;
         }
         try {
@@ -100,73 +146,81 @@ document.addEventListener('DOMContentLoaded', () => {
             const segundaDerivadaTermos = derivadaString(primeiraDerivadaTermos);
             const segundaDerivadaStr = formatarDerivada(segundaDerivadaTermos);
 
-            // Find critical points and classify them
-            const pontosCriticos = encontrar_pontos_criticos(primeiraDerivadaStr);
+            const pontosCriticos = encontrar_pontos_criticos(primeiraDerivadaStr, intervaloInferior, intervaloSuperior);
 
-            let pontosTexto = '';
+            let pontosTexto = [];
             if (pontosCriticos.length === 0) {
-                pontosTexto = '\nNenhum ponto crítico encontrado no intervalo [-10, 10].';
+                pontosTexto.push(`\\text{Nenhum ponto crítico encontrado no intervalo } [${intervaloInferior}, ${intervaloSuperior}].`);
             } else {
-                pontosTexto = '\nPontos críticos encontrados:\n';
-                const classificacoes = classificar_ponto_critico(parseFunctionTerms(funcStr), pontosCriticos, segundaDerivadaStr);
+                pontosTexto.push(`\\text{Pontos críticos encontrados:}`);
+                const classificacoes = classificar_ponto_critico(funcStr, pontosCriticos, segundaDerivadaStr);
                 classificacoes.forEach(({ ponto, tipo, valor }) => {
-                    pontosTexto += `x = ${ponto} (${tipo}), f(x) = ${valor.toFixed(6)}\n`;
+                    pontosTexto.push(`x = ${ponto} \\text{ (${tipo})}, f(x) = ${valor.toFixed(6)}`);
                 });
             }
 
-            showResult(
-                `f'(x) = ${primeiraDerivadaStr}\n` +
-                `f''(x) = ${segundaDerivadaStr}` +
-                pontosTexto
-            );
+            await showResult(document.getElementById('firstDerivativeLatex'), `f'(x) = ${primeiraDerivadaStr}`);
+            await showResult(document.getElementById('secondDerivativeLatex'), `f''(x) = ${segundaDerivadaStr}`);
+
+            const criticalPointsList = document.getElementById('criticalPointsListLatex');
+            criticalPointsList.innerHTML = '';
+            pontosTexto.forEach(pt => {
+                const li = document.createElement('li');
+                li.innerHTML = `\\(${pt}\\)`;
+                criticalPointsList.appendChild(li);
+            });
+            if (window.MathJax) {
+                await MathJax.typesetPromise([criticalPointsList]);
+            }
+
         } catch (err) {
-            showError('Erro ao calcular derivada: ' + err.message);
+            showError(resultadoDerivada, 'Erro ao calcular derivada: ' + err.message);
         }
         clearChart();
     });
 
-    btnCalcularIntegral.addEventListener('click', () => {
-        const funcStr = funcaoInput.value.trim();
-        const a = parseFloat(document.getElementById('limite-inferior').value);
-        const b = parseFloat(document.getElementById('limite-superior').value);
-        const n = parseInt(document.getElementById('subdivisoes').value, 10);
+    btnCalcularIntegral.addEventListener('click', async () => {
+        const funcStr = inputFuncaoIntegrar.value.trim();
+        const a = parseFloat(inputLimiteInferior.value);
+        const b = parseFloat(inputLimiteSuperior.value);
+        const n = parseInt(inputSubdivisoes.value, 10);
 
         if (!funcStr) {
-            showError('Por favor, insira uma função válida.');
+            showError(resultadoIntegral, 'Por favor, insira uma função válida.');
             return;
         }
         if (isNaN(a) || isNaN(b) || isNaN(n)) {
-            showError('Por favor, insira valores numéricos válidos para os limites e subdivisões.');
+            showError(resultadoIntegral, 'Por favor, insira valores numéricos válidos para os limites e subdivisões.');
             return;
         }
         if (n <= 0) {
-            showError('Número de subdivisões deve ser maior que zero.');
+            showError(resultadoIntegral, 'Número de subdivisões deve ser maior que zero.');
             return;
         }
         if (a >= b) {
-            showError('O limite inferior deve ser menor que o limite superior.');
+            showError(resultadoIntegral, 'O limite inferior deve ser menor que o limite superior.');
             return;
         }
 
         try {
             const resultados = integralNumerica(funcStr, a, b, n);
-            showResult(
-                `Integral numérica entre ${a} e ${b} com ${n} subdivisões:\n` +
-                `Riemann Esquerda: ${resultados.riemannEsquerda.toFixed(6)}\n` +
-                `Riemann Direita: ${resultados.riemannDireita.toFixed(6)}\n` +
-                `Riemann Ponto Médio: ${resultados.riemannPontoMedio.toFixed(6)}\n` +
-                `Trapézio: ${resultados.trapezio.toFixed(6)}`
-            );
+            const latexString = `\\int_{${a}}^{${b}} f(x) dx = \\\\
+                \\text{Riemann Esquerda}: ${resultados.riemannEsquerda.toFixed(6)} \\\\
+                \\text{Riemann Direita}: ${resultados.riemannDireita.toFixed(6)} \\\\
+                \\text{Riemann Ponto Médio}: ${resultados.riemannPontoMedio.toFixed(6)} \\\\
+                \\text{Trapézio}: ${resultados.trapezio.toFixed(6)} \\\\`;
+
+            await showResult(resultadoIntegral, latexString);
         } catch (err) {
-            showError('Erro ao calcular integral: ' + err.message);
+            showError(resultadoIntegral, 'Erro ao calcular integral: ' + err.message);
         }
         clearChart();
     });
 
     btnGerarGrafico.addEventListener('click', () => {
-        const funcStr = funcaoInput.value.trim();
+        const funcStr = mode === 'derivar' ? inputFuncaoDerivar.value.trim() : inputFuncaoIntegrar.value.trim();
         if (!funcStr) {
-            showError('Por favor, insira uma função válida.');
+            alert('Por favor, insira uma função válida.');
             return;
         }
 
@@ -175,27 +229,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const primeiraDerivadaTermos = derivadaString(termos);
             const segundaDerivadaTermos = derivadaString(primeiraDerivadaTermos);
 
-            // Prepare data points
             const xValues = [];
             const yFunc = [];
             const yDeriv1 = [];
             const yDeriv2 = [];
 
-            // Define range and step for plotting
             const xMin = -10;
             const xMax = 10;
             const step = 0.2;
 
             for (let x = xMin; x <= xMax; x += step) {
                 xValues.push(x.toFixed(2));
-                // Evaluate original function
                 const yF = avaliar(funcStr, x);
                 yFunc.push(isNaN(yF) ? null : yF);
-                // Evaluate first derivative
                 const deriv1Str = formatarDerivada(primeiraDerivadaTermos);
                 const yD1 = avaliar(deriv1Str, x);
                 yDeriv1.push(isNaN(yD1) ? null : yD1);
-                // Evaluate second derivative
                 const deriv2Str = formatarDerivada(segundaDerivadaTermos);
                 const yD2 = avaliar(deriv2Str, x);
                 yDeriv2.push(isNaN(yD2) ? null : yD2);
@@ -203,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             clearChart();
 
-            chart = new Chart(graficoCanvas, {
+            chart = new Chart(canvasGrafico, {
                 type: 'line',
                 data: {
                     labels: xValues,
@@ -269,13 +318,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            showResult('Gráfico gerado com sucesso.');
+            showResult(mode === 'derivar' ? resultadoDerivada : resultadoIntegral, 'Gráfico gerado com sucesso.');
         } catch (err) {
-            showError('Erro ao gerar gráfico: ' + err.message);
+            showError(mode === 'derivar' ? resultadoDerivada : resultadoIntegral, 'Erro ao gerar gráfico: ' + err.message);
             clearChart();
         }
     });
 
-    // Initialize in derivar mode
     switchMode('derivar');
 });

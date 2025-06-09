@@ -1,13 +1,15 @@
+/**
+ * Calcula a derivada de uma expressão representada por termos em string.
+ * @param {string[]} termosStr - Array de termos da expressão.
+ * @returns {string[]} Array de termos da derivada.
+ */
 function derivadaString(termosStr) {
     function derivarTermo(termo, sinal = 1) {
         termo = termo.trim();
 
         // Polinomial: ax^n ou x^n (AGORA COM SUPORTE A EXPOENTES NEGATIVOS)
-        // O regex foi ajustado para permitir um '-' opcional dentro do grupo de expoente
-        // de `/^-?\d*\.?\d*x\^\d+$/` para `/^-?\d*\.?\d*x\^(-?\d+)$/`
-        // e o match correspondente.
-        if (/^-?\d*\.?\d*x\^(-?\d+)$/.test(termo)) { //
-            const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+)$/); //
+        if (/^-?\d*\.?\d*x\^(-?\d+)$/.test(termo)) {
+            const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+)$/);
             let coefStr = match[1];
 
             const coef = parseFloat(
@@ -16,21 +18,19 @@ function derivadaString(termosStr) {
                 coefStr
             );
 
-            const exp = parseInt(match[2]); // expoente agora pode ser negativo
+            const exp = parseInt(match[2]);
             
-            // Se o expoente for 0, a derivada é 0 (constante)
-            if (exp === 0) { //
-                return '0'; //
+            if (exp === 0) {
+                return '0';
             }
 
-            const novoCoef = coef * exp * sinal; //
-            const novoExp = exp - 1; //
+            const novoCoef = coef * exp * sinal;
+            const novoExp = exp - 1;
 
-            return novoExp === 0 ? `${novoCoef}` : // Ex: 5x^1 -> 5
-                   novoExp === 1 ? `${novoCoef}x` : // Ex: 5x^2 -> 10x
-                   `${novoCoef}x^${novoExp}`; // Ex: 5x^3 -> 15x^2, ou 5x^-2 -> -10x^-3
+            return novoExp === 0 ? `${novoCoef}` :
+                   novoExp === 1 ? `${novoCoef}x` :
+                   `${novoCoef}x^${novoExp}`;
 
-        // Linear: ax ou x
         } else if (/^-?\d*\.?\d*x$/.test(termo)) {
             let coefStr = termo.replace('x', '');
 
@@ -42,7 +42,6 @@ function derivadaString(termosStr) {
 
             return `${coef * sinal}`;
 
-        // Exponencial: ae^x ou ae^(x)
         } else if (/^-?\d*\.?\d*e\^/.test(termo)) {
             const match = termo.match(/^(-?\d*\.?\d*)e\^(.*)$/);
             if (!match) return `Não reconhecido: ${termo}`;
@@ -50,7 +49,6 @@ function derivadaString(termosStr) {
             const coefStr = match[1];
             let argumento = match[2];
 
-            // Remove parênteses desnecessários se for apenas 'x'
             if (argumento === '(x)') {
                 argumento = 'x';
             }
@@ -60,19 +58,16 @@ function derivadaString(termosStr) {
             else if (coefStr && coefStr !== '+') coef = parseFloat(coefStr);
             coef *= sinal;
 
-            // Para e^x, a derivada é simplesmente o coeficiente * e^x
             if (argumento === 'x') {
                 return coef === 1 ? `e^x` :
                        coef === -1 ? `-e^x` :
                        `${coef}e^x`;
             } else {
-                // Para casos mais complexos como e^(2x), precisaria de regra da cadeia
                 return coef === 1 ? `e^(${argumento})` :
                        coef === -1 ? `-e^(${argumento})` :
                        `${coef}e^(${argumento})`;
             }
 
-        // Constante: número puro
         } else if (/^-?\d+(\.\d+)?$/.test(termo)) {
             return '0';
         }
@@ -134,7 +129,6 @@ function derivadaString(termosStr) {
             termo = termo.slice(1);
         }
 
-        // Verifica se é uma expressão entre parênteses
         if (/^\(.*\)$/.test(termo)) {
             const conteudo = termo.slice(1, -1);
             return processarSubtermos(conteudo, sinal);
@@ -144,6 +138,11 @@ function derivadaString(termosStr) {
     });
 }
 
+/**
+ * Formata a derivada representada por termos em string para uma string legível.
+ * @param {string[]} termos - Array de termos da derivada.
+ * @returns {string} Derivada formatada.
+ */
 function formatarDerivada(termos) {
     const termosValidos = termos.filter(t => t !== '0' && !t.includes('Não reconhecido'));
     
@@ -169,7 +168,6 @@ function formatarDerivada(termos) {
         .trim();
 }
 
-module.exports = {
-    derivadaString,
-    formatarDerivada
-}
+// Expondo as funções globalmente para uso no navegador
+window.derivadaString = derivadaString;
+window.formatarDerivada = formatarDerivada;

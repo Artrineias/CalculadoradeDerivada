@@ -1,6 +1,9 @@
-const math = require('mathjs');
-
-// Função auxiliar para avaliar a função em um ponto x
+/**
+ * Função auxiliar para avaliar a função em um ponto x usando math.evaluate.
+ * @param {string} funcao - Função em formato string.
+ * @param {number} x - Valor da variável x.
+ * @returns {number} Resultado da avaliação.
+ */
 function avaliarFuncao(funcao, x) {
     try {
         // Substitui 'e' por Math.E para compatibilidade
@@ -11,7 +14,15 @@ function avaliarFuncao(funcao, x) {
     }
 }
 
-// Método de Riemann (esquerda, direita, ponto médio)
+/**
+ * Método de Riemann (esquerda, direita, ponto médio).
+ * @param {string} funcao - Função em string.
+ * @param {number} a - Limite inferior.
+ * @param {number} b - Limite superior.
+ * @param {number} n - Número de subdivisões.
+ * @param {string} tipo - Tipo de Riemann ('esquerda', 'direita', 'pontoMedio').
+ * @returns {number} Resultado da soma de Riemann.
+ */
 function riemann(funcao, a, b, n, tipo = 'esquerda') {
     if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
     if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
@@ -39,6 +50,14 @@ function riemann(funcao, a, b, n, tipo = 'esquerda') {
     return soma * dx;
 }
 
+/**
+ * Regra dos Trapézios.
+ * @param {string} funcao - Função em string.
+ * @param {number} a - Limite inferior.
+ * @param {number} b - Limite superior.
+ * @param {number} n - Número de subdivisões.
+ * @returns {number} Resultado da regra dos trapézios.
+ */
 function trapezio(funcao, a, b, n) {
     if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
     if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
@@ -53,56 +72,25 @@ function trapezio(funcao, a, b, n) {
     return soma * dx;
 }
 
-function simpson(funcao, a, b, n) {
-    // n deve ser par para Simpson
-    if (n % 2 !== 0) n++;
-
-    const h = (b - a) / n;
-    let soma = 0;
-    
-    const fa = avaliarFuncao(funcao, a);
-    const fb = avaliarFuncao(funcao, b);
-    
-    if (fa === null || fb === null) {
-        return NaN;
-    }
-    
-    soma = fa + fb;
-    
-    // Termos ímpares (coeficiente 4)
-    for (let i = 1; i < n; i += 2) {
-        const xi = a + i * h;
-        const valor = avaliarFuncao(funcao, xi);
-        if (valor !== null && isFinite(valor)) {
-            soma += 4 * valor;
-        }
-    }
-    
-    // Termos pares (coeficiente 2)
-    for (let i = 2; i < n; i += 2) {
-        const xi = a + i * h;
-        const valor = avaliarFuncao(funcao, xi);
-        if (valor !== null && isFinite(valor)) {
-            soma += 2 * valor;
-        }
-    }
-    
-    return (h / 3) * soma;
-}
-
+/**
+ * Função principal para integração numérica - apenas Riemann e Trapézio.
+ * @param {string} funcao - Função em string.
+ * @param {number} a - Limite inferior.
+ * @param {number} b - Limite superior.
+ * @param {number} n - Número de subdivisões.
+ * @returns {Object} Resultados das integrais.
+ */
 function integralNumerica(funcao, a, b, n) {
     return {
         riemannEsquerda: riemann(funcao, a, b, n, 'esquerda'),
         riemannDireita: riemann(funcao, a, b, n, 'direita'),
         riemannPontoMedio: riemann(funcao, a, b, n, 'pontoMedio'),
-        trapezio: trapezio(funcao, a, b, n),
-        simpson: simpson(funcao, a, b, n)
+        trapezio: trapezio(funcao, a, b, n)
     };
 }
 
-module.exports = {
-    integralNumerica,
-    riemann,
-    trapezio,
-    simpson
-};
+// Expondo as funções globalmente para uso no navegador
+window.avaliarFuncao = avaliarFuncao;
+window.riemann = riemann;
+window.trapezio = trapezio;
+window.integralNumerica = integralNumerica;
