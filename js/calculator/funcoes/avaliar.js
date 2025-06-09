@@ -1,9 +1,9 @@
 function avaliarTermo(termo, x) {
     // Polinomial: ax^n
-    if (/^-?\d*\.?\d*x\^\d+$/.test(termo)) {
-        const match = termo.match(/^(-?\d*\.?\d*)x\^(\d+)$/);
+    if (/^-?\d*\.?\d*x\^-?\d+(\.\d+)?$/.test(termo)) {
+        const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+(\.\d+)?)$/);
         const coef = parseFloat(match[1] || (match[1] === '-' ? -1 : 1));
-        const exp = parseInt(match[2]);
+        const exp = parseFloat(match[2]);
         return coef * (x ** exp);
 
     // Linear: ax
@@ -86,18 +86,20 @@ function expressaoParaTermos(expressao) {
     let dentro_parenteses = 0;
 
     for (let i = 0; i < expressao.length; i++) {
-        let char = expressao[i];
-
-        if (char === '(') {
-            dentro_parenteses++;
-        } else if (char === ')') {
-            dentro_parenteses--;
-        }
-        if (i > 0 && dentro_parenteses === 0) {
-            if ((char === '+' || char === '-') && expressao[i-1] !== '^') {
-                termos.push(expressao.slice(inicio, i));
-                inicio = i;
-            }
+        switch (expressao[i]) {
+            case '(':
+                dentro_parenteses++;
+                break;
+            case ')':
+                dentro_parenteses--;
+                break;
+            case '+':
+            case '-':
+                if (i > 0 && dentro_parenteses === 0) {
+                    termos.push(expressao.slice(inicio, i));
+                    inicio = i;
+                }
+                break;
         }
     }
 
