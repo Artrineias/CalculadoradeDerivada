@@ -1,7 +1,8 @@
-function derivadaString(termosStr) {
+export function derivadaString(termosStr) {
     function derivarTermo(termo, sinal = 1) {
         termo = termo.trim();
-        
+
+        // Polinomial: ax^n ou x^n
         if (/^-?\d*\.?\d*x\^(-?\d+)$/.test(termo)) { //
             const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+)$/); //
             let coefStr = match[1];
@@ -15,12 +16,12 @@ function derivadaString(termosStr) {
             const exp = parseInt(match[2]); // expoente agora pode ser negativo
             
             // Se o expoente for 0, a derivada é 0 (constante)
-            if (exp === 0) { //
-                return '0'; //
+            if (exp === 0) {
+                return '0';
             }
 
-            const novoCoef = coef * exp * sinal; //
-            const novoExp = exp - 1; //
+            const novoCoef = coef * exp * sinal;
+            const novoExp = exp - 1;
 
             return novoExp === 0 ? `${novoCoef}` : // Ex: 5x^1 -> 5
                    novoExp === 1 ? `${novoCoef}x` : // Ex: 5x^2 -> 10x
@@ -140,7 +141,7 @@ function derivadaString(termosStr) {
     });
 }
 
-function formatarDerivada(termos) {
+export function formatarDerivada(termos) {
     const termosValidos = termos.filter(t => t !== '0' && !t.includes('Não reconhecido'));
     
     if (termosValidos.length === 0) {
@@ -163,9 +164,4 @@ function formatarDerivada(termos) {
         })
         .join('')
         .trim();
-}
-
-module.exports = {
-    derivadaString,
-    formatarDerivada
 }

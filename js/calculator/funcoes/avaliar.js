@@ -1,4 +1,4 @@
-function avaliarTermo(termo, x) {
+export function avaliarTermo(termo, x) {
     // Polinomial: ax^n
     if (/^-?\d*\.?\d*x\^-?\d+(\.\d+)?$/.test(termo)) {
         const match = termo.match(/^(-?\d*\.?\d*)x\^(-?\d+(\.\d+)?)$/);
@@ -32,7 +32,7 @@ function avaliarTermo(termo, x) {
     return 0; // Termo não reconhecido
 }
 
-function avaliar(expressao, x) {
+export function avaliar(expressao, x) {
     // Se a expressão for uma string, convertemos para um array de termos
     let termos = Array.isArray(expressao) ? expressao : expressaoParaTermos(expressao);
     
@@ -78,7 +78,7 @@ function avaliar(expressao, x) {
 }
 
 // Função auxiliar para converter uma expressão em string para termos
-function expressaoParaTermos(expressao) {
+export function expressaoParaTermos(expressao) {
     expressao = expressao.replace(/\s+/g, ''); // Remove espaços
     
     let termos = [];
@@ -105,10 +105,4 @@ function expressaoParaTermos(expressao) {
 
     termos.push(expressao.slice(inicio));
     return termos;
-}
-
-module.exports = {
-    avaliar,
-    avaliarTermo,
-    expressaoParaTermos
 }

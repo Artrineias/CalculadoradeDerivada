@@ -1,6 +1,6 @@
-const { avaliar } = require("./avaliar");
+import { avaliar } from "./avaliar.js";
 
-function encontrar_ponto_critico_bissecao(expressao, inicio, fim, tolerancia = 1e-8, max_iteracoes = 100) {
+export function encontrar_ponto_critico_bissecao(expressao, inicio, fim, tolerancia = 1e-8, max_iteracoes = 100) {
     let a = inicio;
     let b = fim;
     let fa = avaliar(expressao, a);
@@ -47,7 +47,7 @@ function encontrar_ponto_critico_bissecao(expressao, inicio, fim, tolerancia = 1
 }
 
 // Encontra todos os pontos críticos em um intervalo
-function encontrar_pontos_criticos(expressao, inicio, fim, granularidade = 0.01, tolerancia = 1e-8) {
+export function encontrar_pontos_criticos(expressao, inicio, fim, granularidade = 0.01, tolerancia = 1e-8) {
     let pontos_criticos = [];
     
     for (let i = inicio; i < fim; i += granularidade) {
@@ -90,7 +90,7 @@ function encontrar_pontos_criticos(expressao, inicio, fim, granularidade = 0.01,
     return pontos_criticos.sort((a, b) => a - b);
 }
 
-function classificar_ponto_critico(funcaoOriginal, pontosCriticos, segundaDerivada) {
+export function classificar_ponto_critico(funcaoOriginal, pontosCriticos, segundaDerivada) {
     let resultado = [];
     
     for (let ponto of pontosCriticos) {
@@ -129,9 +129,3 @@ function classificar_ponto_critico(funcaoOriginal, pontosCriticos, segundaDeriva
     
     return resultado;
 }
-
-module.exports = {
-    encontrar_pontos_criticos,
-    encontrar_ponto_critico_bissecao,
-    classificar_ponto_critico,
-};

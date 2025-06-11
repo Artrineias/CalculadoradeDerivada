@@ -1,7 +1,8 @@
-const prompt = require("prompt-sync")();
-const { derivadaString, formatarDerivada } = require("./funcoes/derivada.js");
-const { integralNumerica } = require("./funcoes/integral.js");
-const { encontrar_pontos_criticos, classificar_ponto_critico } = require("./funcoes/ponto_critico.js");
+import { derivadaString, formatarDerivada } from "./funcoes/derivada.js";
+import { integralNumerica } from "./funcoes/integral.js";
+import { encontrar_pontos_criticos, classificar_ponto_critico } from "./funcoes/ponto_critico.js";
+import promptSync from "prompt-sync";
+const prompt = promptSync();
 
 const tipo = parseInt(prompt("Escolha derivar = 1 ou integrar = 2: "));
 

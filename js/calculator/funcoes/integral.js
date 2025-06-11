@@ -1,18 +1,18 @@
-const math = require('mathjs');
+import { evaluate } from 'mathjs';
 
 // Função auxiliar para avaliar a função em um ponto x
-function avaliarFuncao(funcao, x) {
+export function avaliarFuncao(funcao, x) {
     try {
         // Substitui 'e' por Math.E para compatibilidade
         const funcaoProcessada = funcao.replace(/\be\b/g, Math.E.toString());
-        return math.evaluate(funcaoProcessada, { x });
+        return evaluate(funcaoProcessada, { x });
     } catch (erro) {
         throw new Error(`Erro ao avaliar a função: ${erro.message}`);
     }
 }
 
 // Método de Riemann (esquerda, direita, ponto médio)
-function riemann(funcao, a, b, n, tipo = 'esquerda') {
+export function riemann(funcao, a, b, n, tipo = 'esquerda') {
     if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
     if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
     
@@ -39,7 +39,7 @@ function riemann(funcao, a, b, n, tipo = 'esquerda') {
     return soma * dx;
 }
 
-function trapezio(funcao, a, b, n) {
+export function trapezio(funcao, a, b, n) {
     if (n <= 0) throw new Error("Número de subdivisões deve ser positivo");
     if (a >= b) throw new Error("Limite inferior deve ser menor que o superior");
     
@@ -53,7 +53,7 @@ function trapezio(funcao, a, b, n) {
     return soma * dx;
 }
 
-function simpson(funcao, a, b, n) {
+export function simpson(funcao, a, b, n) {
     // n deve ser par para Simpson
     if (n % 2 !== 0) n++;
 
@@ -90,7 +90,7 @@ function simpson(funcao, a, b, n) {
     return (h / 3) * soma;
 }
 
-function integralNumerica(funcao, a, b, n) {
+export function integralNumerica(funcao, a, b, n) {
     return {
         riemannEsquerda: riemann(funcao, a, b, n, 'esquerda'),
         riemannDireita: riemann(funcao, a, b, n, 'direita'),
@@ -99,10 +99,3 @@ function integralNumerica(funcao, a, b, n) {
         simpson: simpson(funcao, a, b, n)
     };
 }
-
-module.exports = {
-    integralNumerica,
-    riemann,
-    trapezio,
-    simpson
-};
